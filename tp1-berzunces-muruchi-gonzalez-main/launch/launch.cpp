@@ -99,8 +99,6 @@ void readLaunchInfo(int shipIndex, string &name, string &city, string &planet, i
 
 void meteorologicalChecks(int shipIndex, int temperature, int humidity, int wind, string conditions, int visibility) {
     
-    ofstream meteorologic_log("info/nave_" + to_string(shipIndex) + "/meteorologic.txt");
-
     const int MIN_TEMPERATURE = 0; // En grados Celsius
     const int MAX_TEMPERATURE = 25; // En grados Celsius
 
@@ -110,93 +108,110 @@ void meteorologicalChecks(int shipIndex, int temperature, int humidity, int wind
     const int MAX_WIND = 0; // En km/h
     const int REQUIRED_VISIBILITY = 5; // En pocentaje
 
-    bool verfication_1 = false;
-    bool verfication_2 = false;
-    bool verfication_3 = false;
-    bool verfication_4 = false;
-    bool verfication_5 = false;
-
-    meteorologic_log << boxedText("Inicio chequeo meteorologico") << endl;
-
-
-    meteorologic_log << "==== Iniciando verificación de temperatura ====" << endl;
-    if (temperature > MIN_TEMPERATURE && temperature < MAX_TEMPERATURE){
-        meteorologic_log << "La temperatura del sistema es " << temperature << "°C" << endl;
-        meteorologic_log << "La temperatura esta entre " << MIN_TEMPERATURE << "°C y " << MAX_TEMPERATURE << "°C" << endl;
-        meteorologic_log << "SUCCESS" << endl;
-        verfication_1= true;
-    } else{
-        meteorologic_log << "La temperatura del sistema es " << temperature << "°C" << endl;
-        meteorologic_log << "La temperatura debe esta>r entre " << MIN_TEMPERATURE << "°C y " << MAX_TEMPERATURE << "°C" << endl;
-        meteorologic_log << "FAIL" << endl;
-    }
+    bool verfication_1 = false; // Verificación de temperatura
+    bool verfication_2 = false; // Verificación de humedad
+    bool verfication_3 = false; // Verificación de viento
+    bool verfication_4 = false; // Verificación de visibilidad
+    bool verfication_5 = false; // Verificación de clima
     
-    meteorologic_log << "" << endl;
-    meteorologic_log << "==== Iniciando verificación de humedad ====" << endl;
-    if (humidity > MIN_HUMIDITY && humidity < MAX_HUMIDITY){
-        meteorologic_log << "El humedad del sistema es " << humidity << "%" << endl;
-        meteorologic_log << "El humedad esta entre " << MIN_HUMIDITY << "% y " << MAX_HUMIDITY << "%" << endl;
-        meteorologic_log << "SUCCESS" << endl;
-        verfication_2= true;
-    } else{
-        meteorologic_log << "El humedad del sistema es " << humidity << "%" << endl;
-        meteorologic_log << "El humedad debe estar entre " << MIN_HUMIDITY << "% y " << MAX_HUMIDITY << "%" << endl;
-        meteorologic_log << "FAIL" << endl;
-    }
+    //Abrimos un archivo de log para guardar la información de chequeo meteorológico
+    ofstream meteorologic_log("info/nave_" + to_string(shipIndex) + "/meteorologic.txt");
+    if (!meteorologic_log.is_open()) {
+        cerr << "No se pudo abrir el archivo de log para la nave " << shipIndex << endl;
+        cerr << "Se abortará la misión" << endl;
+        exit(1);
+    } else { 
+        
+        meteorologic_log << boxedText("Inicio chequeo meteorologico") << endl;
+
+
+        //Aquí se pueden realizar los chequeos de temperatura necesarios
+        meteorologic_log << "==== Iniciando verificación de temperatura ====" << endl;
+        if (temperature > MIN_TEMPERATURE && temperature < MAX_TEMPERATURE){
+            meteorologic_log << "La temperatura del sistema es " << temperature << "°C" << endl;
+            meteorologic_log << "La temperatura esta entre " << MIN_TEMPERATURE << "°C y " << MAX_TEMPERATURE << "°C" << endl;
+            meteorologic_log << "SUCCESS" << endl;
+            verfication_1= true;
+        } else{
+            meteorologic_log << "La temperatura del sistema es " << temperature << "°C" << endl;
+            meteorologic_log << "La temperatura debe esta>r entre " << MIN_TEMPERATURE << "°C y " << MAX_TEMPERATURE << "°C" << endl;
+            meteorologic_log << "FAIL" << endl;
+        }
+        
+        //Aquí se pueden realizar los chequeos de humedad necesarios
+        meteorologic_log << "" << endl;
+        meteorologic_log << "==== Iniciando verificación de humedad ====" << endl;
+        if (humidity > MIN_HUMIDITY && humidity < MAX_HUMIDITY){
+            meteorologic_log << "El humedad del sistema es " << humidity << "%" << endl;
+            meteorologic_log << "El humedad esta entre " << MIN_HUMIDITY << "% y " << MAX_HUMIDITY << "%" << endl;
+            meteorologic_log << "SUCCESS" << endl;
+            verfication_2= true;
+        } else{
+            meteorologic_log << "El humedad del sistema es " << humidity << "%" << endl;
+            meteorologic_log << "El humedad debe estar entre " << MIN_HUMIDITY << "% y " << MAX_HUMIDITY << "%" << endl;
+            meteorologic_log << "FAIL" << endl;
+        }
+        
+        //Aquí se pueden realizar los chequeos de viento necesarios
+        meteorologic_log << "" << endl;
+        meteorologic_log << "==== Iniciando verificación de viento ====" << endl;
+        if (wind < MAX_WIND){
+            meteorologic_log << "El viento del sistema es " << wind << "km/h" << endl;
+            meteorologic_log << "El viento es menor a " << MAX_WIND << "km/h" << endl;
+            meteorologic_log << "SUCCESS" << endl;
+            verfication_3= true;
+        } else{
+            meteorologic_log << "El viento del sistema es " << wind << "km/h" << endl;
+            meteorologic_log << "El viento debe se menor a " << MAX_WIND << "km/h" << endl;
+            meteorologic_log << "FAIL" << endl;
+        }
+        
+        //Aquí se pueden realizar los chequeos de visibilidad necesarios
+        meteorologic_log << "" << endl;
+        meteorologic_log << "==== Iniciando verificación de visibilidad ====" << endl;
+        if (visibility > REQUIRED_VISIBILITY){
+            meteorologic_log << "La visibilidad del sistema es " << visibility << "%" << endl;
+            meteorologic_log << "La visibilidad es ser mayor a " << REQUIRED_VISIBILITY << "%" << endl;
+            meteorologic_log << "SUCCESS" << endl;
+            verfication_4= true;
+        } else{
+            meteorologic_log << "La visibilidad del sistema es " << visibility << "%" << endl;
+            meteorologic_log << "La visibilidad debe ser mayor a " << REQUIRED_VISIBILITY << "%" << endl;
+            meteorologic_log << "FAIL" << endl;
+        }
+        
+        //Aquí se pueden realizar los chequeos de clima necesarios
+        meteorologic_log << "" << endl;
+        meteorologic_log << "==== Iniciando verificación de clima ====" << endl;
+        if (conditions == "Despejado"){
+            meteorologic_log << "El clima del sistema es " << conditions << endl;
+            meteorologic_log << "El clima esta despejado" << endl;
+            meteorologic_log << "SUCCESS" << endl;
+            verfication_5= true;
+        } else if (conditions == "Nublado"){
+            meteorologic_log << "El clima del sistema es " << conditions << endl;
+            meteorologic_log << "El clima esta nublado" << endl;
+            meteorologic_log << "FAIL" << endl;
+        } else{
+            meteorologic_log << "El clima del sistema es " << conditions << endl;
+            meteorologic_log << "El clima esta desconocido" << endl;
+            meteorologic_log << "FAIL" << endl;
+        }
     
-    meteorologic_log << "" << endl;
-    meteorologic_log << "==== Iniciando verificación de viento ====" << endl;
-    if (wind < MAX_WIND){
-        meteorologic_log << "El viento del sistema es " << wind << "km/h" << endl;
-        meteorologic_log << "El viento es menor a " << MAX_WIND << "km/h" << endl;
-        meteorologic_log << "SUCCESS" << endl;
-        verfication_3= true;
-    } else{
-        meteorologic_log << "El viento del sistema es " << wind << "km/h" << endl;
-        meteorologic_log << "El viento debe se menor a " << MAX_WIND << "km/h" << endl;
-        meteorologic_log << "FAIL" << endl;
-    }
-    
-    meteorologic_log << "" << endl;
-    meteorologic_log << "==== Iniciando verificación de visibilidad ====" << endl;
-    if (visibility > REQUIRED_VISIBILITY){
-        meteorologic_log << "La visibilidad del sistema es " << visibility << "%" << endl;
-        meteorologic_log << "La visibilidad es ser mayor a " << REQUIRED_VISIBILITY << "%" << endl;
-        meteorologic_log << "SUCCESS" << endl;
-        verfication_4= true;
-    } else{
-        meteorologic_log << "La visibilidad del sistema es " << visibility << "%" << endl;
-        meteorologic_log << "La visibilidad debe ser mayor a " << REQUIRED_VISIBILITY << "%" << endl;
-        meteorologic_log << "FAIL" << endl;
-    }
-    
-    meteorologic_log << "" << endl;
-    meteorologic_log << "==== Iniciando verificación de clima ====" << endl;
-    if (conditions == "Despejado"){
-        meteorologic_log << "El clima del sistema es " << conditions << endl;
-        meteorologic_log << "El clima esta despejado" << endl;
-        meteorologic_log << "SUCCESS" << endl;
-        verfication_5= true;
-    } else if (conditions == "Nublado"){
-        meteorologic_log << "El clima del sistema es " << conditions << endl;
-        meteorologic_log << "El clima esta nublado" << endl;
-        meteorologic_log << "FAIL" << endl;
-    } else{
-        meteorologic_log << "El clima del sistema es " << conditions << endl;
-        meteorologic_log << "El clima esta desconocido" << endl;
-        meteorologic_log << "FAIL" << endl;
+        // Aquí se pueden realizar los chequeos meteorológicos necesarios
+        meteorologic_log << "" << endl;
+        meteorologic_log << "==== Iniciando verificación de todos los chequeos meteorológicos ====" << endl;
+        if (verfication_1 && verfication_2 && verfication_3 && verfication_4 && verfication_5){
+            meteorologic_log << "Todos los chequeos son exitosos" << endl;
+            meteorologic_log << "SUCCESS" << endl;
+        } else{
+            meteorologic_log << "Alguno de los chequeos no es exitoso" << endl;
+            meteorologic_log << "FAIL" << endl;
+        }
     }
 
-    // Aquí se pueden realizar los chequeos meteorológicos necesarios
-    meteorologic_log << "" << endl;
-    meteorologic_log << "==== Iniciando verificación de todos los chequeos meteorológicos ====" << endl;
-    if (verfication_1 && verfication_2 && verfication_3 && verfication_4 && verfication_5){
-        meteorologic_log << "Todos los chequeos son exitosos" << endl;
-        meteorologic_log << "SUCCESS" << endl;
-    } else{
-        meteorologic_log << "Alguno de los chequeos no es exitoso" << endl;
-        meteorologic_log << "FAIL" << endl;
-    }
+
+
     
     // Aquí se pueden realizar los chequeos meteorológicos necesarios
     // Recuerden que deben guardar la información en el archivo "info/nave_<shipIndex>/meteorologic.txt"
@@ -208,35 +223,60 @@ void meteorologicalChecks(int shipIndex, int temperature, int humidity, int wind
 
     // NO OLVIDEN QUE LA ÚLTIMA LÍNEA DEL ARCHIVO DEBE SER "SUCCESS" O "FAIL"
     // NO AGREGAR UN SALTO DE LÍNEA DESPUÉS DE "SUCCESS" O "FAIL"
-
-    throw runtime_error("Not Implemented: No se ha implementado la función meteorologicalChecks.");
 }
 
 void flightChecks(int shipIndex, int loadCapacity, int fuelAmount, int duration) {
 
+    const double DENSITY= 0.81; // En 0.81 kg/l
+    const double GRAVITY= 9.81; // En m/s²
+    double combustible_weight = loadCapacity * DENSITY ; // Calculo del peso del combustible
+    
+    bool verification_1 = false; // Verificación de capacidad de carga
+    bool verification_2 = false; // Verificación de combustible
+
+    //Abrimos un archivo de log para guardar la información de chequeo de vuelo
     ofstream flight_log("info/nave_" + to_string(shipIndex) + "/flight.txt");
 
-    const double DENSIDAD= 0.81; // 0.81 kg/l
-    const double F_GRAVEDAD = 9.81; // 9.81 m/s²
-    double peso_combustible = loadCapacity * DENSIDAD ;
-    
-    bool cargador = false;
-    bool combustible = false;
+    if (!flight_log.is_open()) {
+        cerr << "No se pudo abrir el archivo de log para la nave " << shipIndex << endl;
+        cerr << "Se abortará la misión" << endl;
+        exit(1);
+    } else { 
 
-    if (loadCapacity >= (peso_combustible*2)){
+    flight_log << boxedText("Inicio chequeo de vuelo") << endl;
+
+
+    //Aquí se pueden realizar los chequeos de capacidad de carga necesarios
+    flight_log << "==== Iniciando verificación de capacidad de carga ====" << endl;
+    if (loadCapacity >= (combustible_weight*2)){
+        flight_log << "La capcidad de la nave es " << loadCapacity << " kg" << endl;
         flight_log << "La capacidad de carga de la nave es suficiente para soportar el cargamiento de la nave" << endl;
-        cargador=true;
+        flight_log << "SUCCESS" << endl;
+        verification_1=true;
     } else{
-        flight_log << "El cargador no puede soportar el cargamiento de la nave" << endl;
+        flight_log << "La capacidad de carga de la nave es " << loadCapacity << " kg" << endl;
+        flight_log << "La capacidad de carga de la nave no es suficiente para soportar el cargamiento de la nave" << endl;
+        flight_log << "FAIL" << endl;
     }
 
+    //Aquí se pueden realizar los chequeos de vuelo necesarios
+    flight_log << "" << endl;
+    flight_log << "==== Iniciando verificación de combustible ====" << endl;
     if ((fuelAmount/8.0) >= duration){
-        flight_log << "El vuelo tiene el ccombustible suficiente para soportar el vuelo" << endl;
-        combustible=true;
+        flight_log << "La cantidad de combustible es " << fuelAmount << " litros" << endl;
+        flight_log << "La cantidad de combustible es suficiente para soportar el vuelo" << endl;
+        flight_log << "SUCCESS" << endl;
+        verification_2=true;
     } else{
-        flight_log << "El combustible no puede soportar el vuelo de la nave" << endl;
+        flight_log << "La cantidad de combustible es " << fuelAmount << " litros" << endl;
+        flight_log << "La cantidad de combustible no es suficiente para soportar el vuelo" << endl;
+        flight_log << "FAIL" << endl;
     }
-    if (combustible && cargador){
+
+    //Aquí se pueden realizar los chequeos de vuelo necesarios
+    flight_log << "" << endl;
+    flight_log << "==== Iniciando verificación de todos los chequeos de vuelo ====" << endl;
+    if (verification_1 && verification_2){
         flight_log << "Todos los chequeos son exitosos" << endl;
         flight_log << "SUCCESS" << endl;
     } else{
@@ -244,7 +284,7 @@ void flightChecks(int shipIndex, int loadCapacity, int fuelAmount, int duration)
         flight_log << "FAIL" << endl;
     }
 
-
+}
     // Aquí se pueden realizar los chequeos de vuelo necesarios
     // Recuerden que deben guardar la información en el archivo "info/nave_<shipIndex>/flight.txt"
     // El formato del archivo es el siguiente:
@@ -256,7 +296,6 @@ void flightChecks(int shipIndex, int loadCapacity, int fuelAmount, int duration)
     // NO OLVIDEN QUE LA ÚLTIMA LÍNEA DEL ARCHIVO DEBE SER "SUCCESS" O "FAIL"
     // NO AGREGAR UN SALTO DE LÍNEA DESPUÉS DE "SUCCESS" O "FAIL"
 
-    throw runtime_error("Not Implemented: No se ha implementado la función flightChecks.");
 }
 
 void shipLaunchChecks(int shipIndex) {

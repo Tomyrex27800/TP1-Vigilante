@@ -5,10 +5,25 @@
 #include <fstream>
 #include "utils.h"
 #include <vector>
+#include <algorithm>
 
 using namespace std;
 
-vector<string> split(const string& str, char delimiter, bool trim) {
+
+// Función para eliminar espacios en blanco al principio y al final de una cadena
+string trim(const string& str) {
+    string s = str;
+    s.erase(s.begin(), find_if(s.begin(), s.end(), [](unsigned char ch) {
+        return !isspace(ch);
+    }));
+    s.erase(find_if(s.rbegin(), s.rend(), [](unsigned char ch) {
+        return !isspace(ch);
+    }).base(), s.end());
+    return s;
+}
+
+
+vector<string> split(const string& str, char delimiter, bool trim_flag) {
     //string es la linea del txt (getline)
     //delimiter es el ":"
     //trim se encarga de eliminar los espacios blancos cuando es "TRUE" y vicebersa
@@ -16,26 +31,31 @@ vector<string> split(const string& str, char delimiter, bool trim) {
     
     stringstream ss;
     ss << str;
-
     string string_temporal;
     vector<string> v_line;
-    
     while (getline(ss, string_temporal, delimiter)) {
-        v_line.push_back(string_temporal);
+        if (trim_flag) {
+            v_line.push_back(trim(string_temporal));
+        } else {
+            v_line.push_back(string_temporal);
+        }
     }
-
     return v_line;
 
-
-    //throw runtime_error("Not Implemented: No se ha implementado la función split.");
 }
 
 string readLastLine(ifstream& fileStream) {
     string ultima_linea;
-    while (getline(fileStream, ultima_linea)) {
+    if (fileStream.is_open()) {
+        while (getline(fileStream, ultima_linea)) {
+        }   
+        fileStream.close();
         return ultima_linea;
+    } else {
+        fileStream.close();
+        return "No se pudo abrir el archivo.";
     }
-    //throw runtime_error("Not Implemented: No se ha implementado la función readLastLine.");
+
 }
 
 string boxedText(const string& text) {

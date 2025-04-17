@@ -10,90 +10,176 @@ using namespace std;
 void readLaunchInfo(int shipIndex, string &name, string &city, string &planet, int &temperature, int &humidity, int &wind, string &conditions, int &visibility, int &loadCapacity, int &fuelAmount, int &duration) {
     //Abre el archivo usando el 'ifstream'
     ifstream read_file("info/nave_" + to_string(shipIndex) + "/info.txt");
+
+    //Abre el archivo usando el 'ofstream'
+    ofstream test_log("info/nave_" + to_string(shipIndex) + "/test.txt");
+
     string line;
     vector<string> lista_valores;
     int contador=0;
     const char SIMBOLO = ':';
-    
+
     if (read_file.is_open()){
         while (getline(read_file,line)){ // Lee la línea del archivo
-            if (contador==6){
+            test_log << "Línea leída: " << line << endl; // Escribe cada línea leída
+
+            if (contador==5){
+                lista_valores=split(line,SIMBOLO,false);
+                if (lista_valores.size() > 1) {
+                    name = lista_valores[1];
+                    test_log << "Nombre: " << name << endl;
+                }
+            } else if (contador==6){
                 lista_valores=split(line,SIMBOLO,true);
-                name = lista_valores[0];
-                contador=contador+1;
-                continue;
-            }
-            if (contador==7){
+                if (lista_valores.size() > 1) {
+                    city = lista_valores[1];
+                    test_log << "Ciudad: " << city << endl;
+                }
+            } else if (contador==7){
                 lista_valores=split(line,SIMBOLO,true);
-                city = lista_valores[0];
-                contador=contador+1;
-                continue;
-            }
-            if (contador==8){
-                lista_valores=split(line,SIMBOLO,true);
-                planet = lista_valores[0];
-                contador=contador+1;
-                continue;
-            }
-            if (contador==11){ // Si llegamos a la línea de la temperatura
+                if (lista_valores.size() > 1) {
+                    planet = lista_valores[1];
+                    test_log << "Planeta: " << planet << endl;
+                }
+            } else if (contador==10){ // Si llegamos a la línea de la temperatura
                 lista_valores=split(line,SIMBOLO,true); // Lo separa por el simbolo ":"
-                temperature = stoi(lista_valores[0]); // Lo convierte a entero
-                contador=contador+1; // Pasa al siguiente contador
-                continue; // Salta al siguiente ciclo
-            }
-            if (contador==12){ // Si llegamos a la línea de la humedad
+                if (lista_valores.size() > 1) {
+                    string temp_str = lista_valores[1];
+                    size_t pos_grados = temp_str.find("°");
+                    size_t pos_celsius = temp_str.find("C");
+                    if (pos_grados != string::npos) temp_str.erase(pos_grados, 1); // Borra "°" (1 caracter)
+                    if (pos_celsius != string::npos) temp_str.erase(pos_celsius, 1); // Borra "C" (1 caracter)
+                    try {
+                        temperature = stoi(trim(temp_str));
+                        test_log << "Temperatura: " << temperature << endl;
+                    } catch (const std::invalid_argument& e) {
+                        test_log << "Error al convertir Temperatura: " << e.what() << " - Cadena: '" << trim(temp_str) << "'" << endl;
+                    } catch (const std::out_of_range& e) {
+                        test_log << "Error de rango al convertir Temperatura: " << e.what() << " - Cadena: '" << trim(temp_str) << "'" << endl;
+                    }
+                }
+            } else if (contador==11){ // Si llegamos a la línea de la humedad
                 lista_valores=split(line,SIMBOLO,true); // Lo separa por el simbolo ":"
-                humidity = stoi(lista_valores[0]); // Lo convierte a entero
-                contador=contador+1; // Pasa al siguiente contador
-                continue; // Salta al siguiente ciclo
-            }
-            if (contador==13){ // Si llegamos a la línea de la dirección del viento
+                if (lista_valores.size() > 1) {
+                    string hum_str = lista_valores[1];
+                    size_t pos_percentaje = hum_str.find("%");
+                    if (pos_percentaje != string::npos) hum_str.erase(pos_percentaje, 1); // Borra "%" (1 caracter)
+                    try {
+                        humidity = stoi(trim(hum_str));
+                        test_log << "Humedad: " << humidity << endl;
+                    } catch (const std::invalid_argument& e) {
+                        test_log << "Error al convertir Humedad: " << e.what() << " - Cadena: '" << trim(hum_str) << "'" << endl;
+                    } catch (const std::out_of_range& e) {
+                        test_log << "Error de rango al convertir Humedad: " << e.what() << " - Cadena: '" << trim(hum_str) << "'" << endl;
+                    }
+                }
+            } else if (contador==12){ // Si llegamos a la línea de la dirección del viento
                 lista_valores=split(line,SIMBOLO,true); // Lo separa por el simbolo ":"
-                wind = stoi(lista_valores[0]); // Lo convierte a entero
-                contador=contador+1; // Pasa al siguiente contador
-                continue; // Salta al siguiente ciclo
-            }
-            if (contador==14){ // Si llegamos a la línea de la condición meteorológica
+                if (lista_valores.size() > 1) {
+                    string wind_str = lista_valores[1];
+                    size_t pos_kmh = wind_str.find("km/h");
+                    if (pos_kmh != string::npos) wind_str.erase(pos_kmh, 4); // Borra "km/h" (4 caracteres)
+                    try {
+                        wind = stoi(trim(wind_str));
+                        test_log << "Viento: " << wind << endl;
+                    } catch (const std::invalid_argument& e) {
+                        test_log << "Error al convertir Viento: " << e.what() << " - Cadena: '" << trim(wind_str) << "'" << endl;
+                    } catch (const std::out_of_range& e) {
+                        test_log << "Error de rango al convertir Viento: " << e.what() << " - Cadena: '" << trim(wind_str) << "'" << endl;
+                    }
+                }
+            } else if (contador==13){ // Si llegamos a la línea de la condición meteorológica
                 lista_valores=split(line,SIMBOLO,true); // Lo separa por el simbolo ":"
-                conditions = lista_valores[0]; // Lo guarda en la variable
-                contador=contador+1; // Pasa al siguiente contador
-                continue; // Salta al siguiente ciclo
-            }
-            if (contador==15){ // Si llegamos a la línea de la visibilidad
+                if (lista_valores.size() > 1) {
+                    conditions = lista_valores[1]; // Lo guarda en la variable
+                    test_log << "Condiciones: " << conditions << endl;
+                }
+            } else if (contador==14){ // Si llegamos a la línea de la visibilidad
                 lista_valores=split(line,SIMBOLO,true); // Lo separa por el simbolo ":"
-                visibility = stoi(lista_valores[0]); // Lo convierte a entero
-                contador=contador+1; // Pasa al siguiente contador
-                continue; // Salta al siguiente ciclo
-            }
-            if (contador==18){ // Si llegamos a la línea de la capacidad de carga
+                if (lista_valores.size() > 1) {
+                    string vis_str = lista_valores[1];
+                    size_t pos_percentaje = vis_str.find("%");
+                    if (pos_percentaje != string::npos) vis_str.erase(pos_percentaje, 1); // Borra "%" (1 caracter)
+                    try {
+                        visibility = stoi(trim(vis_str));
+                        test_log << "Visibilidad: " << visibility << endl;
+                    } catch (const std::invalid_argument& e) {
+                        test_log << "Error al convertir Visibilidad: " << e.what() << " - Cadena: '" << trim(vis_str) << "'" << endl;
+                    } catch (const std::out_of_range& e) {
+                        test_log << "Error de rango al convertir Visibilidad: " << e.what() << " - Cadena: '" << trim(vis_str) << "'" << endl;
+                    }
+                }
+            } else if (contador==17){ // Si llegamos a la línea de la capacidad de carga
                 lista_valores=split(line,SIMBOLO,true); // Lo separa por el simbolo ":"
-                loadCapacity = stoi(lista_valores[0]); // Lo convierte a entero
-                contador=contador+1; // Pasa al siguiente contador
-                continue; // Salta al siguiente ciclo
-            }
-            if (contador==19){ // Si llegamos a la línea de la cantidad de combustible
+                if (lista_valores.size() > 1) {
+                    string load_str = lista_valores[1];
+                    size_t pos_kg = load_str.find("kg");
+                    if (pos_kg != string::npos) load_str.erase(pos_kg, 2); // Borra "kg" (2 caracteres)
+                    try {
+                        loadCapacity = stoi(trim(load_str));
+                        test_log << "Capacidad de carga: " << loadCapacity << endl;
+                    } catch (const std::invalid_argument& e) {
+                        test_log << "Error al convertir Capacidad de carga: " << e.what() << " - Cadena: '" << trim(load_str) << "'" << endl;
+                    } catch (const std::out_of_range& e) {
+                        test_log << "Error de rango al convertir Capacidad de carga: " << e.what() << " - Cadena: '" << trim(load_str) << "'" << endl;
+                    }
+                }
+            } else if (contador==18){ // Si llegamos a la línea de la cantidad de combustible
                 lista_valores=split(line,SIMBOLO,true); // Lo separa por el simbolo ":"
-                fuelAmount = stoi(lista_valores[0]); // Lo convierte a entero
-                contador=contador+1; // Pasa al siguiente contador
-                cout << "FuelAmount: " << fuelAmount << endl;
-                continue; // Salta al siguiente ciclo
-            }
-            if (contador==20){ // Si llegamos a la línea de la duración del vuelo
+                if (lista_valores.size() > 1) {
+                    string fuel_str = lista_valores[1];
+                    size_t pos_litros = fuel_str.find("litros");
+                    if (pos_litros != string::npos) fuel_str.erase(pos_litros, 6); // Borra "litros" (6 caracteres)
+                    try {
+                        fuelAmount = stoi(trim(fuel_str));
+                        test_log << "Combustible: " << fuelAmount << endl;
+                    } catch (const std::invalid_argument& e) {
+                        test_log << "Error al convertir Combustible: " << e.what() << " - Cadena: '" << trim(fuel_str) << "'" << endl;
+                    } catch (const std::out_of_range& e) {
+                        test_log << "Error de rango al convertir Combustible: " << e.what() << " - Cadena: '" << trim(fuel_str) << "'" << endl;
+                    }
+                }
+            } else if (contador==19){ // Si llegamos a la línea de la duración del vuelo
                 lista_valores=split(line,SIMBOLO,true); // Lo separa por el simbolo ":"
-                duration = stoi(lista_valores[0]); // Lo convierte a entero
-                contador=contador+1; // Pasa al siguiente contador
-                continue; // Salta al siguiente ciclo
+                if (lista_valores.size() > 1) {
+                    string duration_str = lista_valores[1];
+                    size_t pos_horas = duration_str.find("horas");
+                    if (pos_horas != string::npos) duration_str.erase(pos_horas, 5); // Borra "horas" (5 caracteres)
+                    try {
+                        duration = stoi(trim(duration_str));
+                        test_log << "Duración del vuelo: " << duration << endl;
+                    } catch (const std::invalid_argument& e) {
+                        test_log << "Error al convertir Duración del vuelo: " << e.what() << " - Cadena: '" << trim(duration_str) << "'" << endl;
+                    } catch (const std::out_of_range& e) {
+                        test_log << "Error de rango al convertir Duración del vuelo: " << e.what() << " - Cadena: '" << trim(duration_str) << "'" << endl;
+                    }
+                }
             }
+            contador++;
         }
+        read_file.close();
+        test_log << "\n==== Resumen de la información leída ====" << endl;
+        test_log << "Nombre: " << name << endl;
+        test_log << "Ciudad: " << city << endl;
+        test_log << "Planeta: " << planet << endl;
+        test_log << "Temperatura: " << temperature << endl;
+        test_log << "Humedad: " << humidity << endl;
+        test_log << "Viento: " << wind << endl;
+        test_log << "Condiciones: " << conditions << endl;
+        test_log << "Visibilidad: " << visibility << endl;
+        test_log << "Capacidad de carga: " << loadCapacity << endl;
+        test_log << "Combustible: " << fuelAmount << endl;
+        test_log << "Duración del vuelo: " << duration << endl;
+        test_log.close();
     }
-    else if (!read_file.is_open()) {
+    else {
         throw runtime_error("No se pudo abrir el archivo de información de la nave " + to_string(shipIndex));
     }
 
     // Recopilar información del lanzamiento
     // Esta información se encuentra en el archivo "info/nave_<shipIndex>/info.txt"
     // Para el formato específico del archivo, revisar la consigna
-    
+
     //throw runtime_error("Not Implemented: No se ha implementado la función readLaunchInfo.");
 }
 
@@ -243,48 +329,48 @@ void flightChecks(int shipIndex, int loadCapacity, int fuelAmount, int duration)
         exit(1);
     } else { 
 
-    flight_log << boxedText("Inicio chequeo de vuelo") << endl;
+        flight_log << boxedText("Inicio chequeo de vuelo") << endl;
 
 
-    //Aquí se pueden realizar los chequeos de capacidad de carga necesarios
-    flight_log << "==== Iniciando verificación de capacidad de carga ====" << endl;
-    if (loadCapacity >= (combustible_weight*2)){
-        flight_log << "La capcidad de la nave es " << loadCapacity << " kg" << endl;
-        flight_log << "La capacidad de carga de la nave es suficiente para soportar el cargamiento de la nave" << endl;
-        flight_log << "SUCCESS" << endl;
-        verification_1=true;
-    } else{
-        flight_log << "La capacidad de carga de la nave es " << loadCapacity << " kg" << endl;
-        flight_log << "La capacidad de carga de la nave no es suficiente para soportar el cargamiento de la nave" << endl;
-        flight_log << "FAIL" << endl;
+        //Aquí se pueden realizar los chequeos de capacidad de carga necesarios
+        flight_log << "==== Iniciando verificación de capacidad de carga ====" << endl;
+        if (loadCapacity >= (combustible_weight*2)){
+            flight_log << "La capcidad de la nave es " << loadCapacity << " kg" << endl;
+            flight_log << "La capacidad de carga de la nave es suficiente para soportar el cargamiento de la nave" << endl;
+            flight_log << "SUCCESS" << endl;
+            verification_1=true;
+        } else{
+            flight_log << "La capacidad de carga de la nave es " << loadCapacity << " kg" << endl;
+            flight_log << "La capacidad de carga de la nave no es suficiente para soportar el cargamiento de la nave" << endl;
+            flight_log << "FAIL" << endl;
+        }
+
+        //Aquí se pueden realizar los chequeos de vuelo necesarios
+        flight_log << "" << endl;
+        flight_log << "==== Iniciando verificación de combustible ====" << endl;
+        if ((fuelAmount/8.0) >= duration){
+            flight_log << "La cantidad de combustible es " << fuelAmount << " litros" << endl;
+            flight_log << "La cantidad de combustible es suficiente para soportar el vuelo" << endl;
+            flight_log << "SUCCESS" << endl;
+            verification_2=true;
+        } else{
+            flight_log << "La cantidad de combustible es " << fuelAmount << " litros" << endl;
+            flight_log << "La cantidad de combustible no es suficiente para soportar el vuelo" << endl;
+            flight_log << "FAIL" << endl;
+        }
+
+        //Aquí se pueden realizar los chequeos de vuelo necesarios
+        flight_log << "" << endl;
+        flight_log << "==== Iniciando verificación de todos los chequeos de vuelo ====" << endl;
+        if (verification_1 && verification_2){
+            flight_log << "Todos los chequeos son exitosos" << endl;
+            flight_log << "SUCCESS" << endl;
+        } else{
+            flight_log << "Alguno de los chequeos no es exitoso" << endl;
+            flight_log << "FAIL" << endl;
+        }
+
     }
-
-    //Aquí se pueden realizar los chequeos de vuelo necesarios
-    flight_log << "" << endl;
-    flight_log << "==== Iniciando verificación de combustible ====" << endl;
-    if ((fuelAmount/8.0) >= duration){
-        flight_log << "La cantidad de combustible es " << fuelAmount << " litros" << endl;
-        flight_log << "La cantidad de combustible es suficiente para soportar el vuelo" << endl;
-        flight_log << "SUCCESS" << endl;
-        verification_2=true;
-    } else{
-        flight_log << "La cantidad de combustible es " << fuelAmount << " litros" << endl;
-        flight_log << "La cantidad de combustible no es suficiente para soportar el vuelo" << endl;
-        flight_log << "FAIL" << endl;
-    }
-
-    //Aquí se pueden realizar los chequeos de vuelo necesarios
-    flight_log << "" << endl;
-    flight_log << "==== Iniciando verificación de todos los chequeos de vuelo ====" << endl;
-    if (verification_1 && verification_2){
-        flight_log << "Todos los chequeos son exitosos" << endl;
-        flight_log << "SUCCESS" << endl;
-    } else{
-        flight_log << "Alguno de los chequeos no es exitoso" << endl;
-        flight_log << "FAIL" << endl;
-    }
-
-}
     // Aquí se pueden realizar los chequeos de vuelo necesarios
     // Recuerden que deben guardar la información en el archivo "info/nave_<shipIndex>/flight.txt"
     // El formato del archivo es el siguiente:

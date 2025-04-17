@@ -126,7 +126,7 @@ void welcomeScreen();
  * @return Un vector de cadenas que contiene las partes divididas.
  * @note Esta función es útil para procesar cadenas de texto que contienen información separada por un delimitador específico.
  */
-vector<string> split(const string& str, char delimiter, bool trim = true);
+vector<string> split(const string& str, char delimiter, bool trim_flag = true);
 
 /**
  * @brief Genera un texto enmarcado con caracteres especiales.
@@ -162,3 +162,7 @@ void successfulLaunch(int shipIndex, string details = "");
  * @note Esta función es útil para obtener información específica de un archivo sin cargar todo su contenido en memoria.
  */
 string readLastLine(ifstream& fileStream);
+
+
+
+string trim(const string& str);

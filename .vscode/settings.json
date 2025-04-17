@@ -5,6 +5,19 @@
         "xstring": "cpp",
         "ostream": "cpp",
         "vector": "cpp",
-        "stdexcept": "cpp"
+        "stdexcept": "cpp",
+        "deque": "cpp",
+        "format": "cpp",
+        "list": "cpp",
+        "array": "cpp",
+        "initializer_list": "cpp",
+        "type_traits": "cpp",
+        "xhash": "cpp",
+        "xtree": "cpp",
+        "xutility": "cpp",
+        "chrono": "cpp",
+        "forward_list": "cpp",
+        "xmemory": "cpp",
+        "fstream": "cpp"
     }
 }

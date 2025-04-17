@@ -7,7 +7,7 @@
 
 using namespace std;
 
-void readLaunchInfo(int shipIndex, string& name, string& city, string& planet, int& temperature, int& humidity, int& wind, string& conditions, int& visibility, int& loadCapacity, int& fuelAmount, int& duration) {
+void readLaunchInfo(int shipIndex, string &name, string &city, string &planet, int &temperature, int &humidity, int &wind, string &conditions, int &visibility, int &loadCapacity, int &fuelAmount, int &duration) {
     //Abre el archivo usando el 'ifstream'
     ifstream read_file("info/nave_" + to_string(shipIndex) + "/info.txt");
     string line;
@@ -24,63 +24,64 @@ void readLaunchInfo(int shipIndex, string& name, string& city, string& planet, i
                 continue;
             }
             if (contador==7){
-                split(line,SIMBOLO,true);
-                city = line;
+                lista_valores=split(line,SIMBOLO,true);
+                city = lista_valores[0];
                 contador=contador+1;
                 continue;
             }
             if (contador==8){
-                split(line,SIMBOLO,true);
-                planet = line;
+                lista_valores=split(line,SIMBOLO,true);
+                planet = lista_valores[0];
                 contador=contador+1;
                 continue;
             }
 
             if (contador==11){ // Si llegamos a la línea de la temperatura
-                split(line,SIMBOLO,true); // Lo separa por el simbolo ":"
-                temperature = stoi(line); // Lo convierte a entero
+                lista_valores=split(line,SIMBOLO,true); // Lo separa por el simbolo ":"
+                temperature = stoi(lista_valores[0]); // Lo convierte a entero
                 contador=contador+1; // Pasa al siguiente contador
                 continue; // Salta al siguiente ciclo
             }
             if (contador==12){ // Si llegamos a la línea de la humedad
-                split(line,SIMBOLO,true); // Lo separa por el simbolo ":"
-                humidity = stoi(line); // Lo convierte a entero
+                lista_valores=split(line,SIMBOLO,true); // Lo separa por el simbolo ":"
+                humidity = stoi(lista_valores[0]); // Lo convierte a entero
                 contador=contador+1; // Pasa al siguiente contador
                 continue; // Salta al siguiente ciclo
             }
             if (contador==13){ // Si llegamos a la línea de la dirección del viento
-                split(line,SIMBOLO,true); // Lo separa por el simbolo ":"
-                wind = stoi(line); // Lo convierte a entero
+                lista_valores=split(line,SIMBOLO,true); // Lo separa por el simbolo ":"
+                wind = stoi(lista_valores[0]); // Lo convierte a entero
                 contador=contador+1; // Pasa al siguiente contador
                 continue; // Salta al siguiente ciclo
             }
             if (contador==14){ // Si llegamos a la línea de la condición meteorológica
-                split(line,SIMBOLO,true); // Lo separa por el simbolo ":"
-                conditions = line; // Lo guarda en la variable
+                lista_valores=split(line,SIMBOLO,true); // Lo separa por el simbolo ":"
+                conditions = lista_valores[0]; // Lo guarda en la variable
                 contador=contador+1; // Pasa al siguiente contador
                 continue; // Salta al siguiente ciclo
             }
             if (contador==15){ // Si llegamos a la línea de la visibilidad
-                split(line,SIMBOLO,true); // Lo separa por el simbolo ":"
-                visibility = stoi(line); // Lo convierte a entero
+                lista_valores=split(line,SIMBOLO,true); // Lo separa por el simbolo ":"
+                visibility = stoi(lista_valores[0]); // Lo convierte a entero
                 contador=contador+1; // Pasa al siguiente contador
                 continue; // Salta al siguiente ciclo
             }
             if (contador==18){ // Si llegamos a la línea de la capacidad de carga
-                split(line,SIMBOLO,true); // Lo separa por el simbolo ":"
-                loadCapacity = stoi(line); // Lo convierte a entero
+                lista_valores=split(line,SIMBOLO,true); // Lo separa por el simbolo ":"
+                loadCapacity = stoi(lista_valores[0]); // Lo convierte a entero
                 contador=contador+1; // Pasa al siguiente contador
                 continue; // Salta al siguiente ciclo
             }
             if (contador==19){ // Si llegamos a la línea de la cantidad de combustible
-                split(line,SIMBOLO,true); // Lo separa por el simbolo ":"
-                fuelAmount = stoi(line); // Lo convierte a entero
+                lista_valores=split(line,SIMBOLO,true); // Lo separa por el simbolo ":"
+                fuelAmount = stoi(lista_valores[0]); // Lo convierte a entero
                 contador=contador+1; // Pasa al siguiente contador
+                cout << "FuelAmount: " << fuelAmount << endl;
                 continue; // Salta al siguiente ciclo
             }
             if (contador==20){ // Si llegamos a la línea de la duración del vuelo
-                split(line,SIMBOLO,true); // Lo separa por el simbolo ":"
-                duration = stoi(line); // Lo convierte a entero
+                lista_valores=split(line,SIMBOLO,true); // Lo separa por el simbolo ":"
+                duration = stoi(lista_valores[0]); // Lo convierte a entero
                 contador=contador+1; // Pasa al siguiente contador
                 continue; // Salta al siguiente ciclo
             }
@@ -96,7 +97,7 @@ void readLaunchInfo(int shipIndex, string& name, string& city, string& planet, i
     // Esta información se encuentra en el archivo "info/nave_<shipIndex>/info.txt"
     // Para el formato específico del archivo, revisar la consigna
     
-    throw runtime_error("Not Implemented: No se ha implementado la función readLaunchInfo.");
+    //throw runtime_error("Not Implemented: No se ha implementado la función readLaunchInfo.");
 }
 
 void meteorologicalChecks(int shipIndex, int temperature, int humidity, int wind, string conditions, int visibility) {
@@ -142,12 +143,19 @@ void shipLaunchChecks(int shipIndex) {
     // Abrimos un archivo de log para guardar la información del lanzamiento
     // El archivo se guardará en "info/nave_<shipIndex>/log.txt"
     ofstream log("info/nave_" + to_string(shipIndex) + "/log.txt");
-    if (!log.is_open()) exit(1);
-
-    log << messageStart << city << " \u21E8 " << planet << endl;
-    log << messageStart << "Comenzando preparación para el lanzamiento..." << endl;
+    if (!log.is_open()) {
+        cerr << "No se pudo abrir el archivo de log para la nave " << shipIndex << endl;
+        cerr << "Se abortará la misión" << endl;
+        exit(1);
+    }
+    else {
+        log << messageStart << city << " --> " << planet << endl;
+        log << messageStart << "Comenzando preparación para el lanzamiento..." << endl;   
+        log << messageStart << "Iniciando sensores meteorológicos..." << endl;
+    }
     
-    log << messageStart << "Iniciando sensores meteorológicos..." << endl;
+    exit(1)
+
 
     // A partir de aquí, tienen que completar el código
 

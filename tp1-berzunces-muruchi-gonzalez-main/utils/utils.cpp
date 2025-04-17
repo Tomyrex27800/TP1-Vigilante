@@ -15,16 +15,15 @@ vector<string> split(const string& str, char delimiter, bool trim) {
     //ifint usaremos el metodo stio para devolver solo int y borrar los caracteres qeu no lo sean
     
     stringstream ss;
-    
-    stringstream ss(str);
+    ss << str;
+
     string string_temporal;
     vector<string> v_line;
     
     while (getline(ss, string_temporal, delimiter)) {
         v_line.push_back(string_temporal);
     }
-    ss << "la linea es: " << string_temporal << endl;
-    
+
     return v_line;
 
 

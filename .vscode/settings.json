@@ -20,6 +20,7 @@
         "xmemory": "cpp",
         "fstream": "cpp",
         "xlocmes": "cpp",
-        "xlocale": "cpp"
+        "xlocale": "cpp",
+        "iostream": "cpp"
     }
 }

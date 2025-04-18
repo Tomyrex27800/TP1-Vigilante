@@ -45,17 +45,18 @@ vector<string> split(const string& str, char delimiter, bool trim_flag) {
 }
 
 string readLastLine(ifstream& fileStream) {
-    string ultima_linea;
-    if (fileStream.is_open()) {
-        while (getline(fileStream, ultima_linea)) {
-        }   
-        fileStream.close();
-        return ultima_linea;
-    } else {
-        fileStream.close();
-        return "No se pudo abrir el archivo.";
-    }
+    string lastLine;
+    string currentLine;
 
+    if (fileStream.is_open()) {
+        while (getline(fileStream, currentLine)) {
+            lastLine = currentLine;
+        }
+        fileStream.close();
+    } else {
+        cerr << "No se pudo abrir el archivo: " << endl;
+    }
+    return lastLine;
 }
 
 string boxedText(const string& text) {

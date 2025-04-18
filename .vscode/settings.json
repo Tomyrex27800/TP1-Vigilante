@@ -18,6 +18,8 @@
         "chrono": "cpp",
         "forward_list": "cpp",
         "xmemory": "cpp",
-        "fstream": "cpp"
+        "fstream": "cpp",
+        "xlocmes": "cpp",
+        "xlocale": "cpp"
     }
 }

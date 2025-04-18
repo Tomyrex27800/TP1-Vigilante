@@ -191,7 +191,7 @@ void meteorologicalChecks(int shipIndex, int temperature, int humidity, int wind
     const int MIN_HUMIDITY = 15; // En porcentaje
     const int MAX_HUMIDITY = 85; // En porcentaje
 
-    const int MAX_WIND = 0; // En km/h
+    const int MAX_WIND = 45; // En km/h
     const int REQUIRED_VISIBILITY = 5; // En pocentaje
 
     bool verfication_1 = false; // Verificación de temperatura
@@ -314,8 +314,7 @@ void meteorologicalChecks(int shipIndex, int temperature, int humidity, int wind
 void flightChecks(int shipIndex, int loadCapacity, int fuelAmount, int duration) {
 
     const double DENSITY= 0.81; // En 0.81 kg/l
-    const double GRAVITY= 9.81; // En m/s²
-    double combustible_weight = loadCapacity * DENSITY ; // Calculo del peso del combustible
+    double combustible_weight = fuelAmount * DENSITY ; // Calculo del peso del combustible
     
     bool verification_1 = false; // Verificación de capacidad de carga
     bool verification_2 = false; // Verificación de combustible
@@ -392,55 +391,80 @@ void shipLaunchChecks(int shipIndex) {
     int temperature, humidity, wind, visibility, loadCapacity, fuelAmount, duration;
     readLaunchInfo(shipIndex, name, city, planet, temperature, humidity, wind, conditions, visibility, loadCapacity, fuelAmount, duration);
 
+
+    string flight_file = "info/nave_" + to_string(shipIndex) + "/flight.txt";
+    string meteorologic_file = "info/nave_" + to_string(shipIndex) + "/meteorologic.txt";
+    string log_file = "info/nave_" + to_string(shipIndex) + "/log.txt";
+
     string messageStart = "[" + name + "] ";
-    
-    // Abrimos un archivo de log para guardar la información del lanzamiento
-    // El archivo se guardará en "info/nave_<shipIndex>/log.txt"
-    ofstream log("info/nave_" + to_string(shipIndex) + "/log.txt");
+
+    ofstream log(log_file);
     if (!log.is_open()) {
         cerr << "No se pudo abrir el archivo de log para la nave " << shipIndex << endl;
         cerr << "Se abortará la misión" << endl;
         exit(1);
     }
-    else {
-        log << messageStart << city << " --> " << planet << endl;
-        log << messageStart << "Comenzando preparación para el lanzamiento..." << endl;   
-        log << messageStart << "Iniciando sensores meteorológicos..." << endl;
-        log << messageStart << "Iniciando sensores de vuelo..." << endl;
-        meteorologicalChecks(shipIndex, temperature, humidity, wind, conditions, visibility);
-        flightChecks(shipIndex, loadCapacity, fuelAmount, duration);
-        log << messageStart << "Finalizando sensores meteorológicos..." << endl;
-        log << messageStart << "Finalizando sensores de vuelo..." << endl;
-
-
-    }
     
-    exit(1);
+    log << messageStart << city << " --> " << planet << endl;
+    log << messageStart << "Comenzando preparación para el lanzamiento..." << endl;
+    log << messageStart << "Iniciando chequeo generales..." << endl;
+    
+    pid_t meteorologic_pid , flight_pid;
+    int meteorologic_status, flight_status;
+    meteorologic_pid = fork();
+
+    if (meteorologic_pid == -1) {
+        cerr << "Error al crear el proceso hijo para el chequeo meteorológico de la nave " << shipIndex << endl;
+        log << "Error: No se pudo iniciar el proceso hijo para el chequeo meteorológico de la nave " << shipIndex << endl;
+        log << "FAIL" << endl;
+    } else if (meteorologic_pid == 0) {
+        meteorologicalChecks(shipIndex, temperature, humidity, wind, conditions, visibility);
+        exit(0);
+    } else {
+
+        flight_pid = fork();
+        
+        if (flight_pid == -1) {
+            cerr << "Error al crear el proceso hijo para el chequeo de vuelo de la nave " << shipIndex << endl;
+            log << "Error: No se pudo iniciar el proceso hijo para el chequeo de vuelo de la nave " << shipIndex << endl;
+            log << "FAIL" << endl;
+            kill(meteorologic_pid, SIGKILL);
+        } else if (flight_pid == 0) {
+            flightChecks(shipIndex, loadCapacity, fuelAmount, duration);
+            exit(0);
+        } else {
+            waitpid(meteorologic_pid, &meteorologic_status, 0);
+            waitpid(flight_pid, &flight_status, 0);
+        
+            bool meteorologic_check = false;
+            bool flight_check = false;
 
 
-    // A partir de aquí, tienen que completar el código
+            ofstream test("info/nave_" + to_string(shipIndex) + "/test.txt");
 
-    // Recuerden verificar si el fork() fue exitoso o no
-    // Si el fork() no fue exitoso, el valor de retorno será negativo
+            ifstream meteorologic_log(meteorologic_file);
+            string lastMeteoLogicLine = readLastLine(meteorologic_log);
+            if (lastMeteoLogicLine == "SUCCESS") {
+                meteorologic_check = true;
+            }
+            meteorologic_log.close();
 
-    // Reucerden que el log debe tener como última línea "SUCCESS" o "FAIL", 
-    // sin salto de línea después de "SUCCESS" o "FAIL"
+            ifstream flight_log(flight_file);
+            string lastFlightLine = readLastLine(flight_log);
+            if (lastFlightLine == "SUCCESS") {
+                flight_check = true;
+            }
+            flight_log.close();
 
-    // Una recomendación es que loggeen todo lo que pasa, esto les permitirá
-    // ver qué está pasando en cada momento y si algo falla, podrán saber dónde
 
-    // Les dejo un órden de ejecución sugerido:
+            test << "IMPORTANTE" << lastFlightLine << endl;
+            test << "IMPORTANTE" << lastMeteoLogicLine << endl;
 
-    // 1. Forkeo para el chequeo meteorológico
-    // 2. En el hijo, se ejecuta la función meteorologicalChecks, 
-    //    NO OLVIDEN TERMINAR EL PROCESO HIJO DESPUÉS DE EJECUTAR LA FUNCIÓN
-    // 3. En el padre, forkeo para el chequeo de vuelo
-    // 4. En el hijo, se ejecuta la función flightChecks
-    //    NO OLVIDEN TERMINAR EL PROCESO HIJO DESPUÉS DE EJECUTAR LA FUNCIÓN
-    // 5. Esperar a que ambos hijos terminen. Recuerden que no queremos forzar un órden
-    //    entre los dos hijos, ya que son chequeos que pueden hacerse en "paralelo".
-    // 6. En el padre, chequear los logs correspondientes a cada chequeo (meteorológico y de vuelo)
-    // 7. Si ambos chequeos son exitosos, escribir en el log del padre "SUCCESS"
-    //    Si alguno de los chequeos falla, escribir "FAIL"
-    // 8. Cerrar el log del padre
+            if (meteorologic_check && flight_check) {
+                log << "SUCCESS" << endl;
+            } else {
+                log << "FAIL" << endl;
+            }
+        }
+    }
 }

@@ -36,15 +36,14 @@ int main() {
         usleep(SLEEP_TIME);
         string logFilePath = "info/nave_" + to_string(i) + "/log.txt";
         ifstream logFile(logFilePath);
-        
+
         if (!logFile.is_open()) {
             failedLaunch(i, "No se pudo abrir el archivo de log. Asumimos que el lanzamiento falló.");
-            logFile.close();
             continue;
         }
 
         string line = readLastLine(logFile);
-
+        logFile.close(); // Cerrar el archivo de log inmediatamente después de leer
         if (line == "SUCCESS") {
             successfulLaunch(i);
         } else if (line == "FAIL") {
@@ -52,8 +51,6 @@ int main() {
         } else {
             failedLaunch(i, "Estado desconocido. Asumimos que el lanzamiento falló.");
         }
-        
-        logFile.close();
     }
 
     return 0;

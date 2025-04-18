@@ -176,11 +176,6 @@ void readLaunchInfo(int shipIndex, string &name, string &city, string &planet, i
         throw runtime_error("No se pudo abrir el archivo de información de la nave " + to_string(shipIndex));
     }
 
-    // Recopilar información del lanzamiento
-    // Esta información se encuentra en el archivo "info/nave_<shipIndex>/info.txt"
-    // Para el formato específico del archivo, revisar la consigna
-
-    //throw runtime_error("Not Implemented: No se ha implementado la función readLaunchInfo.");
 }
 
 void meteorologicalChecks(int shipIndex, int temperature, int humidity, int wind, string conditions, int visibility) {
@@ -295,20 +290,6 @@ void meteorologicalChecks(int shipIndex, int temperature, int humidity, int wind
             meteorologic_log << "FAIL" << endl;
         }
     }
-
-
-
-    
-    // Aquí se pueden realizar los chequeos meteorológicos necesarios
-    // Recuerden que deben guardar la información en el archivo "info/nave_<shipIndex>/meteorologic.txt"
-    // El formato del archivo es el siguiente:
-    // - Si TODAS las condiciones son adecuadas, escribir en la última línea "SUCCESS"
-    // - Si alguna de las condiciones no es adecuada, escribir en la última línea "FAIL"
-    // Adicionalmente, pueden agregar información a lo largo del chequeo
-    // para que quede registrado en el archivo de log
-
-    // NO OLVIDEN QUE LA ÚLTIMA LÍNEA DEL ARCHIVO DEBE SER "SUCCESS" O "FAIL"
-    // NO AGREGAR UN SALTO DE LÍNEA DESPUÉS DE "SUCCESS" O "FAIL"
 }
 
 void flightChecks(int shipIndex, int loadCapacity, int fuelAmount, int duration) {
@@ -370,17 +351,6 @@ void flightChecks(int shipIndex, int loadCapacity, int fuelAmount, int duration)
         }
 
     }
-    // Aquí se pueden realizar los chequeos de vuelo necesarios
-    // Recuerden que deben guardar la información en el archivo "info/nave_<shipIndex>/flight.txt"
-    // El formato del archivo es el siguiente:
-    // - Si TODOS los chequeos son exitosos, escribir en la última línea "SUCCESS"
-    // - Si alguno de los chequeos no es exitoso, escribir en la última línea "FAIL"
-    // Adicionalmente, pueden agregar información a lo largo del chequeo
-    // para que quede registrado en el archivo de log
-
-    // NO OLVIDEN QUE LA ÚLTIMA LÍNEA DEL ARCHIVO DEBE SER "SUCCESS" O "FAIL"
-    // NO AGREGAR UN SALTO DE LÍNEA DESPUÉS DE "SUCCESS" O "FAIL"
-
 }
 
 void shipLaunchChecks(int shipIndex) {

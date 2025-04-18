@@ -27,7 +27,6 @@ vector<string> split(const string& str, char delimiter, bool trim_flag) {
     //string es la linea del txt (getline)
     //delimiter es el ":"
     //trim se encarga de eliminar los espacios blancos cuando es "TRUE" y vicebersa
-    //ifint usaremos el metodo stio para devolver solo int y borrar los caracteres qeu no lo sean
     
     stringstream ss;
     ss << str;
